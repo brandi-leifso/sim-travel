@@ -5,6 +5,7 @@
 import { useEffect, useRef, useState } from "react";
 import { DESTINATIONS, PASSPORT_COUNT, pickDestination, randomFlightDetails } from "../lib/constants.js";
 import { useWakeLock } from "../lib/hooks.js";
+import { Sound } from "../lib/sound.js";
 import EvioMark from "../components/EvioMark.jsx";
 import Plane from "../components/Plane.jsx";
 import "../styles/kiosk.css";
@@ -47,6 +48,8 @@ export default function Kiosk() {
   };
 
   const checkIn = () => {
+    Sound.unlock();
+    Sound.tap(true);
     enterFullscreen();
     setScreen("select");
   };
@@ -56,6 +59,7 @@ export default function Kiosk() {
   const choosePassport = (n) => {
     if (stampedIndex != null) return;
     setStampedIndex(n);
+    Sound.stamp(true);
     const finalDestination = pickDestination();
     timers.current.push(
       setTimeout(() => {
@@ -81,10 +85,15 @@ export default function Kiosk() {
       if (step >= ROLL_STEPS) {
         setRollText(destination);
         setRolling(false);
+        Sound.chime(true);
+        timers.current.push(
+          setTimeout(() => Sound.announce(`Final boarding call for ${destination}.`), 450)
+        );
         return;
       }
       const decoy = DESTINATIONS[Math.floor(Math.random() * DESTINATIONS.length)];
       setRollText(decoy);
+      Sound.flip(true);
       delay *= ROLL_GROWTH;
       timers.current.push(setTimeout(tick, delay));
     };
@@ -93,6 +102,8 @@ export default function Kiosk() {
   }, [screen, destination]);
 
   const startOver = () => {
+    Sound.tap(true);
+    Sound.stopAnnouncement();
     clearTimers();
     setDestination(null);
     setRollText(null);
@@ -111,9 +122,9 @@ export default function Kiosk() {
 
       {screen === "home" && (
         <div className="ek-screen ek-home">
-          <EvioMark size={30} style={{ animationDelay: "0s" }} className="ek-in" />
+          <EvioMark size={60} style={{ animationDelay: "0s" }} className="ek-in" />
           <div className="ek-kicker ek-in" style={{ animationDelay: "0.08s" }}>
-            <Plane size={13} className="ek-kicker-plane" />
+            <Plane size={22} className="ek-kicker-plane" />
             Now Boarding
           </div>
           <div className="ek-route ek-in" style={{ animationDelay: "0.14s" }} aria-hidden="true">
@@ -121,9 +132,7 @@ export default function Kiosk() {
             <Plane size={16} className="ek-route-plane" />
           </div>
           <p className="ek-body ek-in" style={{ animationDelay: "0.2s" }}>
-            Choose your passport
-            <br />
-            to reveal your next destination.
+            Choose your passport to reveal your destination.
           </p>
           <button className="ek-btn ek-in" style={{ animationDelay: "0.28s" }} onClick={checkIn}>
             Check In

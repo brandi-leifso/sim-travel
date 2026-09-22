@@ -172,8 +172,21 @@ html, body {
 }
 .ek-btn-quiet:hover { opacity: 0.85; }
 
-/* ── home ── */
-.ek-home .ek-kicker { margin-top: 4px; }
+/* ── home — type runs ~2x the size used elsewhere in the experience ── */
+.ek-home .ek-kicker {
+  margin-top: 4px;
+  font-size: clamp(24px, 2.8vw, 30px);
+  gap: 14px;
+}
+.ek-home .ek-body {
+  font-size: clamp(32px, 4vw, 42px);
+  line-height: 1.35;
+  max-width: 780px;
+}
+.ek-home .ek-btn {
+  font-size: clamp(26px, 3vw, 32px);
+  padding: 26px 68px;
+}
 
 /* A short animated flight path — a plane crossing a dashed route line, on
    loop. The one bit of ambient motion on an otherwise still screen. */
@@ -362,4 +375,12 @@ html, body {
 
 @media (max-width: 480px) {
   .ek-passport { width: 100%; max-width: 280px; }
+}
+
+/* Below iPad width (this is an iPad kiosk) — keep the doubled Home type from
+   wrapping the tracked-out kicker onto two lines. */
+@media (max-width: 600px) {
+  .ek-home .ek-kicker { font-size: 17px; letter-spacing: 0.22em; gap: 8px; }
+  .ek-home .ek-body { font-size: 22px; }
+  .ek-home .ek-btn { font-size: 17px; padding: 18px 44px; }
 }
