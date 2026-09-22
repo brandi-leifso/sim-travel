@@ -1,0 +1,14 @@
+{
+  "name": "golden-egg-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tiny WebSocket relay + static host for the Golden Egg promo. Dumb rebroadcast; Display stays the source of truth.",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

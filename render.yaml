@@ -1,0 +1,12 @@
+# Render Blueprint — lets you deploy this whole app in one shot via
+# Render Dashboard → New + → Blueprint (after you've pushed this folder to
+# your own GitHub repo). See HANDOFF.md for the full walkthrough.
+services:
+  - type: web
+    name: golden-egg
+    runtime: node
+    plan: starter # "free" works too but idles after inactivity — see HANDOFF.md
+    buildCommand: cd web && npm install && npm run build && cd ../server && npm install
+    startCommand: node server/index.js
+    healthCheckPath: /healthz
+    autoDeploy: true
