@@ -1,14 +1,11 @@
 {
-  "name": "golden-egg-server",
+  "name": "evio-checkin-server",
   "version": "1.0.0",
   "private": true,
-  "description": "Tiny WebSocket relay + static host for the Golden Egg promo. Dumb rebroadcast; Display stays the source of truth.",
+  "description": "Static file host for the Evio Airlines check-in kiosk. No state, no relay — the app runs entirely client-side.",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
     "start": "node index.js"
-  },
-  "dependencies": {
-    "ws": "^8.18.0"
   }
 }

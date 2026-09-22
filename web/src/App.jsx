@@ -1,12 +1,6 @@
-import Display from "./screens/Display.jsx";
-import Admin from "./screens/Admin.jsx";
-import Home from "./screens/Home.jsx";
+import Kiosk from "./screens/Kiosk.jsx";
 
-// Tiny path-based router. No history navigation needed — each screen lives at a
-// fixed URL the operator bookmarks (/display on the TV, /admin on the phone).
+// The whole activation is one self-guided screen on one iPad — no routing needed.
 export default function App() {
-  const path = window.location.pathname.replace(/\/+$/, "");
-  if (path.endsWith("/admin")) return <Admin />;
-  if (path.endsWith("/display")) return <Display />;
-  return <Home />;
+  return <Kiosk />;
 }

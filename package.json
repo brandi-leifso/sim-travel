@@ -1,8 +1,8 @@
 {
-  "name": "golden-egg",
+  "name": "evio-checkin",
   "version": "1.0.0",
   "private": true,
-  "description": "VClub Golden Egg Rebuy — standalone live in-room promo (public Display + floor Admin). No live-data access.",
+  "description": "Evio Airlines check-in kiosk — a self-guided iPad activation (choose a passport, reveal a destination). No live data access.",
   "scripts": {
     "install:all": "cd web && npm install && cd ../server && npm install",
     "build": "cd web && npm install && npm run build",

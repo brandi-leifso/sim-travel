@@ -1,6 +1,9 @@
 # Render Blueprint — lets you deploy this whole app in one shot via
 # Render Dashboard → New + → Blueprint (after you've pushed this folder to
 # your own GitHub repo). See HANDOFF.md for the full walkthrough.
+# Service name kept as "golden-egg" to match the already-deployed Render
+# service tied to this repo — renaming here would create a second service
+# rather than rename the existing one.
 services:
   - type: web
     name: golden-egg
