@@ -155,17 +155,13 @@ export default function Kiosk() {
         <span className="ek-cloud ek-cloud-d" />
       </div>
 
-      {/* Persistent small brand mark on every screen except Home, which
-          already carries the logo as its own hero moment. */}
-      {screen !== "home" && (
-        <div className="ek-brand" aria-hidden="true">
-          <EvioMark size={33} />
-        </div>
-      )}
+      {/* Persistent small brand mark, fixed top-center on every screen. */}
+      <div className="ek-brand" aria-hidden="true">
+        <EvioMark size={33} />
+      </div>
 
       {screen === "home" && (
         <div className="ek-screen ek-home">
-          <EvioMark size={60} style={{ animationDelay: "0s" }} className="ek-in" />
           <div className="ek-kicker ek-in" style={{ animationDelay: "0.08s" }}>
             <Plane size={22} className="ek-kicker-plane" />
             Now Boarding
