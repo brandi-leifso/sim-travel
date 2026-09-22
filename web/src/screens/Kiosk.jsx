@@ -159,7 +159,7 @@ export default function Kiosk() {
           already carries the logo as its own hero moment. */}
       {screen !== "home" && (
         <div className="ek-brand" aria-hidden="true">
-          <EvioMark size={22} />
+          <EvioMark size={33} />
         </div>
       )}
 
