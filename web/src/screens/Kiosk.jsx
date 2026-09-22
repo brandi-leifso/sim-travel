@@ -49,6 +49,7 @@ export default function Kiosk() {
 
   const checkIn = () => {
     Sound.unlock();
+    Sound.unlockSpeech();
     Sound.tap(true);
     enterFullscreen();
     setScreen("select");
@@ -60,6 +61,7 @@ export default function Kiosk() {
     if (stampedIndex != null) return;
     setStampedIndex(n);
     Sound.stamp(true);
+    Sound.unlockSpeech(); // re-prime — this tap is closer to when the announcement fires
     const finalDestination = pickDestination();
     timers.current.push(
       setTimeout(() => {

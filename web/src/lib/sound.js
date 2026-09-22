@@ -60,6 +60,18 @@ export const Sound = {
     const c = audioCtx();
     return !!c;
   },
+  // iOS Safari ties speech synthesis to a user gesture far more strictly than
+  // WebAudio: a speak() call made later from a setTimeout (like the real
+  // announcement, which fires after the destination roll finishes) can
+  // silently do nothing unless the engine was already "primed" by a speak()
+  // call made directly inside a real tap. This does that priming with an
+  // inaudible utterance, right when Check In is tapped.
+  unlockSpeech() {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    const u = new SpeechSynthesisUtterance(" ");
+    u.volume = 0;
+    window.speechSynthesis.speak(u);
+  },
   // soft UI confirmation — Check In / Continue
   tap(on) {
     if (!on) return;
