@@ -1,10 +1,10 @@
 // Evio Airlines — SFX (synthesized at runtime, no asset files).
 // Kept deliberately quiet and short: a soft UI tap, a stamp thunk, the
 // departure-board's tick as the destination rolls, a warm two-note chime
-// when it lands, and a spoken "final boarding call for [destination]" PA
+// when it lands, a spoken "final boarding call for [destination]" PA
 // announcement right after (via the browser's built-in text-to-speech —
 // there's no recorded voice asset here, so quality follows whatever voice
-// the device has).
+// the device has), and a quick "swoosh" when the text-bubble screen sends.
 // Needs a user gesture first — Kiosk's "Check In" tap unlocks the
 // AudioContext, same pattern as any browser autoplay-restricted audio.
 
@@ -103,6 +103,26 @@ export const Sound = {
     const t = c.currentTime;
     tone(c, 784, t, 0.24, 0.08, "triangle");
     tone(c, 1047, t + 0.12, 0.32, 0.07, "triangle");
+  },
+  // the text bubble sending — a quick rising "swoosh", echoing iMessage's own
+  // sent sound without literally sampling it.
+  messageSent(on) {
+    if (!on) return;
+    const c = audioCtx();
+    if (!c) return;
+    const t = c.currentTime;
+    const o = c.createOscillator(),
+      g = c.createGain();
+    o.type = "sine";
+    o.frequency.setValueAtTime(520, t);
+    o.frequency.exponentialRampToValueAtTime(1400, t + 0.14);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(0.09, t + 0.03);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+    o.connect(g);
+    g.connect(c.destination);
+    o.start(t);
+    o.stop(t + 0.18);
   },
   // the PA announcement after a destination lands — spoken via the browser's
   // built-in text-to-speech, since this needs actual words, not a tone.

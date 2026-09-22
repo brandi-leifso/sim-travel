@@ -18,6 +18,14 @@ const STAMP_MS = 480;
 const ROLL_STEPS = 7;
 const ROLL_START_MS = 70;
 const ROLL_GROWTH = 1.35;
+// How long the destination stays on screen alone before the reveal gives way
+// to the closing "go to the scale" end state.
+const CLOSING_DELAY_MS = 3200;
+// The text bubble under "Baggage Drop" types itself out at this pace, after
+// a short pause once the headline lands.
+const TYPE_TEXT = "ILY, text me when you land.";
+const TYPE_START_DELAY_MS = 500;
+const TYPE_CHAR_MS = 55;
 
 export default function Kiosk() {
   const [screen, setScreen] = useState("home"); // home | select | reveal
@@ -26,6 +34,8 @@ export default function Kiosk() {
   const [rollText, setRollText] = useState(null);
   const [rolling, setRolling] = useState(false);
   const [flight, setFlight] = useState(null);
+  const [revealPhase, setRevealPhase] = useState("destination"); // destination | closing
+  const [typedText, setTypedText] = useState("");
   const rollKey = useRef(0);
   const timers = useRef([]);
 
@@ -68,6 +78,7 @@ export default function Kiosk() {
         setDestination(finalDestination);
         setRollText(pickDestination()); // avoids a blank first frame
         setFlight(randomFlightDetails());
+        setRevealPhase("destination");
         setScreen("reveal");
         setStampedIndex(null);
       }, STAMP_MS)
@@ -91,6 +102,7 @@ export default function Kiosk() {
         timers.current.push(
           setTimeout(() => Sound.announce(`Final boarding call for ${destination}.`), 450)
         );
+        timers.current.push(setTimeout(() => setRevealPhase("closing"), CLOSING_DELAY_MS));
         return;
       }
       const decoy = DESTINATIONS[Math.floor(Math.random() * DESTINATIONS.length)];
@@ -103,6 +115,26 @@ export default function Kiosk() {
     return clearTimers; // eslint-disable-line react-hooks/exhaustive-deps
   }, [screen, destination]);
 
+  // Types the text bubble out character by character once the closing state
+  // opens, then plays the "sent" swoosh.
+  useEffect(() => {
+    if (revealPhase !== "closing") {
+      setTypedText("");
+      return;
+    }
+    let i = 0;
+    const step = () => {
+      i += 1;
+      setTypedText(TYPE_TEXT.slice(0, i));
+      if (i < TYPE_TEXT.length) {
+        timers.current.push(setTimeout(step, TYPE_CHAR_MS));
+      } else {
+        Sound.messageSent(true);
+      }
+    };
+    timers.current.push(setTimeout(step, TYPE_START_DELAY_MS));
+  }, [revealPhase]);
+
   const startOver = () => {
     Sound.tap(true);
     Sound.stopAnnouncement();
@@ -110,6 +142,7 @@ export default function Kiosk() {
     setDestination(null);
     setRollText(null);
     setFlight(null);
+    setRevealPhase("destination");
     setScreen("home");
   };
 
@@ -121,6 +154,14 @@ export default function Kiosk() {
         <span className="ek-cloud ek-cloud-c" />
         <span className="ek-cloud ek-cloud-d" />
       </div>
+
+      {/* Persistent small brand mark on every screen except Home, which
+          already carries the logo as its own hero moment. */}
+      {screen !== "home" && (
+        <div className="ek-brand" aria-hidden="true">
+          <EvioMark size={22} />
+        </div>
+      )}
 
       {screen === "home" && (
         <div className="ek-screen ek-home">
@@ -171,36 +212,56 @@ export default function Kiosk() {
 
       {screen === "reveal" && (
         <div className="ek-screen ek-reveal">
-          <div className="ek-kicker ek-in">Check-In Complete</div>
-          <div className="ek-next ek-in" style={{ animationDelay: "0.06s" }}>
-            Next Stop:
-          </div>
-          <h1 className={"ek-destination" + (rolling ? " is-rolling" : "")} key={rollKey.current}>
-            {rollText}
-          </h1>
-          {flight && (
-            <div className={"ek-ticket" + (rolling ? " is-hidden" : "")}>
-              <span>Gate {String(flight.gate).padStart(2, "0")}</span>
-              <span className="ek-ticket-dot">·</span>
-              <span>Seat {flight.seat}</span>
-              <span className="ek-ticket-dot">·</span>
-              <span>Flight {flight.flight}</span>
+          <div className="ek-kicker ek-in">Check-In Complete.</div>
+
+          {revealPhase === "destination" && (
+            <>
+              <div className="ek-next ek-in" style={{ animationDelay: "0.06s" }}>
+                Next Stop:
+              </div>
+              <h1
+                className={"ek-destination" + (rolling ? " is-rolling" : "")}
+                key={rollKey.current}
+              >
+                {rollText}
+              </h1>
+              {flight && (
+                <div className={"ek-ticket" + (rolling ? " is-hidden" : "")}>
+                  <span>Gate {String(flight.gate).padStart(2, "0")}</span>
+                  <span className="ek-ticket-dot">·</span>
+                  <span>Seat {flight.seat}</span>
+                  <span className="ek-ticket-dot">·</span>
+                  <span>Flight {flight.flight}</span>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* The iPad part is over — a deliberately distinct end state, not
+              more content stacked under the destination. Nothing here is
+              interactive; the only live control is the corner reset below.
+              Mirrors the "Next Stop: [destination]" reveal's own big-type
+              energy, then the text bubble types itself out underneath —
+              the one warm beat, folded into this same screen instead of a
+              separate page. */}
+          {revealPhase === "closing" && (
+            <div className="ek-end" aria-hidden="true">
+              <div className="ek-next ek-in">Next Step:</div>
+              <h2 className="ek-end-headline ek-in">Baggage Drop</h2>
+              <div className="ek-bubble-row ek-in" style={{ animationDelay: "0.15s" }}>
+                <div className="ek-bubble-mono">
+                  {typedText}
+                  <span className="ek-caret" />
+                </div>
+              </div>
             </div>
           )}
-          <p className={"ek-body" + (rolling ? " is-hidden" : "")}>You're flight-ready.</p>
-          <div className={"ek-baggage" + (rolling ? " is-hidden" : "")}>
-            Head to Baggage Drop
-            <span className="ek-baggage-arrow" aria-hidden="true">
-              →
-            </span>
-          </div>
-          <div className={"ek-tagline" + (rolling ? " is-hidden" : "")}>Less Stress. More Travel.</div>
-          <button
-            className={"ek-btn ek-btn-invert ek-btn-quiet" + (rolling ? " is-hidden" : "")}
-            onClick={startOver}
-          >
-            Continue
-          </button>
+
+          {revealPhase !== "destination" && (
+            <button className="ek-corner-reset" onClick={startOver} aria-label="Reset for next guest">
+              Continue
+            </button>
+          )}
         </div>
       )}
     </div>

@@ -109,6 +109,9 @@ The server listens on `process.env.PORT` (Render sets this automatically).
 - **Copy:** all guest-facing text lives in `web/src/screens/Kiosk.jsx`.
 - **Look:** colors, type, and spacing are all in `web/src/styles/kiosk.css`
   (black/white only, by design — no accent color).
-- **Logo:** `web/src/components/EvioMark.jsx` renders "EVIO™" as styled text
-  rather than an image, so it stays crisp at any size. Swap in the literal logo
-  asset there if you'd rather use the exact brand file.
+- **Logo:** `web/src/components/EvioMark.jsx` renders the real brand asset at
+  `web/src/assets/evio-logo.png` (sized by height, aspect ratio preserved).
+  It's inverted to white on the black reveal screen via a CSS rule
+  (`.ek-reveal .evio-mark`), not a second file — replace the PNG to update
+  the logo everywhere at once. A small copy of it appears in a fixed corner
+  on every screen except Home, which shows it large as its own moment.

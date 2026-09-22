@@ -28,10 +28,12 @@ html, body {
            env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
   overflow: hidden;
 }
-.ek-reveal { background: #000000; color: #FFFFFF; }
+/* the reveal screen stays dark for contrast, but carries a hint of the same
+   sky — a deep navy blend rather than flat black, with the cloud layer
+   still faintly present underneath (see .ek-reveal .ek-sky below). */
+.ek-reveal { background: linear-gradient(165deg, #05070C 0%, #0A121E 55%, #000000 100%); color: #FFFFFF; }
 
-/* ── above-the-clouds atmosphere (Home / Select only — the reveal screen
-   stays pure black for contrast) ── */
+/* ── above-the-clouds atmosphere, present on every screen ── */
 .ek-sky {
   position: absolute;
   inset: 0;
@@ -41,7 +43,7 @@ html, body {
   opacity: 1;
   transition: opacity 0.4s ease;
 }
-.ek-reveal .ek-sky { opacity: 0; }
+.ek-reveal .ek-sky { opacity: 0.16; }
 .ek-cloud {
   position: absolute;
   border-radius: 50%;
@@ -93,14 +95,9 @@ html, body {
   100% { opacity: 1; transform: translateY(0); }
 }
 
-/* ── wordmark ── */
-.evio-mark {
-  font-weight: 800;
-  letter-spacing: 0.01em;
-  display: inline-flex;
-  align-items: flex-start;
-}
-.evio-mark-tm { font-size: 0.32em; font-weight: 700; margin-left: 0.06em; }
+/* ── wordmark (real brand asset) — inverted to white on the dark reveal
+   screen instead of needing a second file. */
+.ek-reveal .evio-mark { filter: invert(1); }
 
 /* ── shared type ── */
 .ek-kicker {
@@ -121,21 +118,9 @@ html, body {
   margin: 0;
   opacity: 0.86;
 }
-.ek-tagline {
-  font-size: clamp(11px, 1.2vw, 13px);
-  font-weight: 800;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  opacity: 0.7;
-}
-
-/* Elements gated behind the destination roll settling (see .is-rolling on
-   .ek-destination) — they hold back, then rise in together once it lands. */
-.ek-reveal .ek-body,
-.ek-ticket,
-.ek-baggage,
-.ek-reveal .ek-tagline,
-.ek-reveal .ek-btn {
+/* .ek-ticket holds back during the destination roll (.is-hidden), then rises
+   in once it settles — see .is-rolling on .ek-destination. */
+.ek-ticket {
   transition: opacity 0.45s ease, transform 0.45s ease;
 }
 .is-hidden { opacity: 0 !important; transform: translateY(10px); pointer-events: none; }
@@ -338,38 +323,107 @@ html, body {
 }
 .ek-ticket-dot { opacity: 0.5; }
 
-/* the hand-off: the one thing on this screen that should pull focus */
-.ek-baggage {
-  display: inline-flex;
+/* ── the end state ── the iPad part of the experience is genuinely over: a
+   distinct screen (not more content stacked under the destination), and
+   nothing in it is a control — no box, no border, no cursor, no hover.
+   pointer-events is off entirely so it can never register as tappable or
+   show iOS's tap-highlight flash. The only live control is .ek-corner-reset,
+   deliberately outside this block. */
+.ek-end {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 10px;
-  border: 2px solid #FFFFFF;
-  border-radius: 2px;
-  padding: 14px 26px;
-  font-size: clamp(15px, 1.7vw, 19px);
+  max-width: 560px;
+  pointer-events: none;
+}
+/* same big, bold energy as the destination reveal's "Next Stop: [city]" —
+   this is the moment that has to land, not a quiet notice. */
+.ek-end-headline {
+  font-size: clamp(48px, 9vw, 92px);
   font-weight: 800;
-  letter-spacing: 0.13em;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  margin: 0 0 6px;
   text-transform: uppercase;
-  margin-top: 4px;
+  animation: ek-settle-in 0.55s cubic-bezier(.2,.8,.2,1.3) both;
 }
-.ek-baggage-arrow {
+/* the text bubble, folded into this same screen rather than a separate page.
+   Black and white to match the rest of the experience — a white card typing
+   itself out on the dark background, not the blue of a real Messages app. */
+.ek-bubble-row {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 8px;
+}
+.ek-bubble-mono {
+  background: #FFFFFF;
+  color: #000000;
+  font-size: clamp(17px, 2vw, 21px);
+  font-weight: 600;
+  line-height: 1.4;
+  padding: 14px 20px;
+  border-radius: 20px;
+  border-bottom-left-radius: 6px;
+  max-width: min(420px, 80vw);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5);
+}
+.ek-caret {
   display: inline-block;
-  animation: ek-nudge 1.3s ease-in-out infinite;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  background: currentColor;
+  vertical-align: -0.15em;
+  animation: ek-caret-blink 0.9s step-end infinite;
 }
-@keyframes ek-nudge {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(6px); }
+@keyframes ek-caret-blink {
+  50% { opacity: 0; }
+}
+
+/* the reset for the next guest — deliberately tucked in a corner, tiny and
+   quiet, so it never reads as "the next step" for the attendee standing at
+   the kiosk. This is a staff control, not a guest action. */
+.ek-corner-reset {
+  position: fixed;
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  z-index: 5;
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.3);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+.ek-corner-reset:hover { color: rgba(255, 255, 255, 0.55); }
+
+/* the small persistent brand mark carried on every non-Home screen */
+.ek-brand {
+  position: fixed;
+  top: calc(18px + env(safe-area-inset-top, 0px));
+  left: calc(18px + env(safe-area-inset-left, 0px));
+  z-index: 6;
+  opacity: 0.9;
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .ek-in,
-  .ek-destination {
+  .ek-destination,
+  .ek-end-headline {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
   }
   .ek-route-plane,
-  .ek-baggage-arrow,
+  .ek-caret,
   .ek-cloud { animation: none; }
 }
 
