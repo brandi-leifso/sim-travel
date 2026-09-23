@@ -26,8 +26,14 @@ export const DESTINATIONS = [
   "VANCOUVER",
 ];
 
-export function pickDestination() {
-  return DESTINATIONS[Math.floor(Math.random() * DESTINATIONS.length)];
+// Picks a destination, avoiding whatever was just shown (`exclude`) 9 times
+// out of 10 — pure chance alone repeats far more often than it feels like it
+// should over a night of back-to-back guests, so this pushes the odds toward
+// variety instead of leaving it to chance.
+export function pickDestination(exclude) {
+  const pool =
+    exclude && Math.random() < 0.9 ? DESTINATIONS.filter((d) => d !== exclude) : DESTINATIONS;
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 // A little personalization for the reveal — echoes the fields on the physical

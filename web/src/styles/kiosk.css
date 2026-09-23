@@ -22,18 +22,17 @@ html, body {
   -webkit-font-smoothing: antialiased;
   color: #000000;
   /* base sky wash — clouds (below) sit on top of this */
-  background: linear-gradient(165deg, #DCEEFB 0%, #EDF6FC 42%, #FFFFFF 78%);
+  background: linear-gradient(165deg, #C9E6FA 0%, #E3F3FC 42%, #FFFFFF 78%);
   transition: background 0.3s ease, color 0.3s ease;
   padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
            env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
   overflow: hidden;
 }
-/* the reveal screen stays dark for contrast, but carries a hint of the same
-   sky — a deep navy blend rather than flat black, with the cloud layer
-   still faintly present underneath (see .ek-reveal .ek-sky below). */
-.ek-reveal { background: linear-gradient(165deg, #05070C 0%, #0A121E 55%, #000000 100%); color: #FFFFFF; }
+/* the reveal screen (both the destination and the closing state) is flat
+   black — the sky stays behind on Home/Select only. */
+.ek-reveal { background: #000000; color: #FFFFFF; }
 
-/* ── above-the-clouds atmosphere, present on every screen ── */
+/* ── above-the-clouds atmosphere — Home and Select only ── */
 .ek-sky {
   position: absolute;
   inset: 0;
@@ -43,31 +42,31 @@ html, body {
   opacity: 1;
   transition: opacity 0.4s ease;
 }
-.ek-reveal .ek-sky { opacity: 0.16; }
+.ek-reveal .ek-sky { opacity: 0; }
 .ek-cloud {
   position: absolute;
   border-radius: 50%;
-  filter: blur(22px);
+  filter: blur(18px);
   will-change: transform;
 }
 .ek-cloud-a {
   width: 46vw; height: 20vw; top: 6%; left: -12%;
-  background: radial-gradient(closest-side, rgba(255,255,255,0.95), rgba(255,255,255,0.35) 60%, transparent 78%);
+  background: radial-gradient(closest-side, rgba(255,255,255,0.95), rgba(255,255,255,0.45) 60%, transparent 78%);
   animation: ek-drift-1 75s ease-in-out infinite alternate;
 }
 .ek-cloud-b {
   width: 34vw; height: 15vw; top: 46%; right: -10%;
-  background: radial-gradient(closest-side, rgba(255,255,255,0.9), rgba(255,255,255,0.3) 60%, transparent 78%);
+  background: radial-gradient(closest-side, rgba(255,255,255,0.92), rgba(255,255,255,0.4) 60%, transparent 78%);
   animation: ek-drift-2 95s ease-in-out infinite alternate;
 }
 .ek-cloud-c {
   width: 52vw; height: 22vw; bottom: -8%; left: 18%;
-  background: radial-gradient(closest-side, rgba(255,255,255,0.85), rgba(255,255,255,0.25) 60%, transparent 78%);
+  background: radial-gradient(closest-side, rgba(255,255,255,0.9), rgba(255,255,255,0.35) 60%, transparent 78%);
   animation: ek-drift-3 120s ease-in-out infinite alternate;
 }
 .ek-cloud-d {
   width: 30vw; height: 13vw; top: 14%; right: 6%;
-  background: radial-gradient(closest-side, rgba(199,222,240,0.55), rgba(199,222,240,0.15) 60%, transparent 75%);
+  background: radial-gradient(closest-side, rgba(179,210,235,0.7), rgba(179,210,235,0.25) 60%, transparent 75%);
   animation: ek-drift-2 85s ease-in-out infinite alternate-reverse;
 }
 @keyframes ek-drift-1 { 0% { transform: translate(0, 0); } 100% { transform: translate(5vw, 1.5vw); } }

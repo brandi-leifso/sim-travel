@@ -3,7 +3,7 @@
 // back to Home for the next guest. No server round-trip, no second device —
 // the whole thing runs client-side in this one tab.
 import { useEffect, useRef, useState } from "react";
-import { DESTINATIONS, PASSPORT_COUNT, pickDestination, randomFlightDetails } from "../lib/constants.js";
+import { PASSPORT_COUNT, pickDestination, randomFlightDetails } from "../lib/constants.js";
 import { useWakeLock } from "../lib/hooks.js";
 import { Sound } from "../lib/sound.js";
 import EvioMark from "../components/EvioMark.jsx";
@@ -38,6 +38,9 @@ export default function Kiosk() {
   const [typedText, setTypedText] = useState("");
   const rollKey = useRef(0);
   const timers = useRef([]);
+  // Remembers the last destination actually shown, across guests, so the
+  // 90%-different logic in pickDestination has something to avoid.
+  const lastDestinationRef = useRef(null);
 
   useWakeLock(true);
 
@@ -72,11 +75,12 @@ export default function Kiosk() {
     setStampedIndex(n);
     Sound.stamp(true);
     Sound.unlockSpeech(); // re-prime — this tap is closer to when the announcement fires
-    const finalDestination = pickDestination();
+    const finalDestination = pickDestination(lastDestinationRef.current);
+    lastDestinationRef.current = finalDestination;
     timers.current.push(
       setTimeout(() => {
         setDestination(finalDestination);
-        setRollText(pickDestination()); // avoids a blank first frame
+        setRollText(pickDestination(finalDestination)); // avoids a blank first frame
         setFlight(randomFlightDetails());
         setRevealPhase("destination");
         setScreen("reveal");
@@ -92,6 +96,7 @@ export default function Kiosk() {
     setRolling(true);
     let step = 0;
     let delay = ROLL_START_MS;
+    let lastDecoy = null;
     const tick = () => {
       step += 1;
       rollKey.current += 1;
@@ -105,7 +110,8 @@ export default function Kiosk() {
         timers.current.push(setTimeout(() => setRevealPhase("closing"), CLOSING_DELAY_MS));
         return;
       }
-      const decoy = DESTINATIONS[Math.floor(Math.random() * DESTINATIONS.length)];
+      const decoy = pickDestination(lastDecoy);
+      lastDecoy = decoy;
       setRollText(decoy);
       Sound.flip(true);
       delay *= ROLL_GROWTH;
