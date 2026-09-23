@@ -156,16 +156,16 @@ html, body {
 }
 .ek-btn-quiet:hover { opacity: 0.85; }
 
-/* ── home — type runs ~2x the size used elsewhere in the experience ── */
+/* ── home — "Now Boarding" leads, the instruction line stays quiet ── */
 .ek-home .ek-kicker {
   margin-top: 4px;
-  font-size: clamp(24px, 2.8vw, 30px);
-  gap: 14px;
+  font-size: clamp(30px, 3.6vw, 40px);
+  gap: 16px;
 }
 .ek-home .ek-body {
-  font-size: clamp(32px, 4vw, 42px);
-  line-height: 1.35;
-  max-width: 780px;
+  font-size: clamp(22px, 2.6vw, 27px);
+  line-height: 1.4;
+  max-width: 620px;
 }
 .ek-home .ek-btn {
   font-size: clamp(26px, 3vw, 32px);
@@ -173,11 +173,12 @@ html, body {
 }
 
 /* A short animated flight path — a plane crossing a dashed route line, on
-   loop. The one bit of ambient motion on an otherwise still screen. */
+   loop. The one bit of ambient motion on an otherwise still screen; sized up
+   to match the larger "Now Boarding" it sits under. */
 .ek-route {
   position: relative;
-  width: 150px;
-  height: 18px;
+  width: 210px;
+  height: 24px;
   overflow: hidden;
 }
 .ek-route-line {
@@ -185,10 +186,10 @@ html, body {
   top: 50%;
   left: 0;
   right: 0;
-  height: 1px;
+  height: 1.5px;
   transform: translateY(-50%);
-  background-image: repeating-linear-gradient(to right, currentColor 0 6px, transparent 6px 13px);
-  opacity: 0.3;
+  background-image: repeating-linear-gradient(to right, currentColor 0 8px, transparent 8px 17px);
+  opacity: 0.32;
 }
 .ek-route-plane {
   position: absolute;

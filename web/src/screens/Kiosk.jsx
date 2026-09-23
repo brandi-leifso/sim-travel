@@ -3,7 +3,7 @@
 // back to Home for the next guest. No server round-trip, no second device —
 // the whole thing runs client-side in this one tab.
 import { useEffect, useRef, useState } from "react";
-import { PASSPORT_COUNT, pickDestination, randomFlightDetails } from "../lib/constants.js";
+import { PASSPORT_COUNT, pickDestination, pickNextDestination, randomFlightDetails } from "../lib/constants.js";
 import { useWakeLock } from "../lib/hooks.js";
 import { Sound } from "../lib/sound.js";
 import EvioMark from "../components/EvioMark.jsx";
@@ -38,9 +38,6 @@ export default function Kiosk() {
   const [typedText, setTypedText] = useState("");
   const rollKey = useRef(0);
   const timers = useRef([]);
-  // Remembers the last destination actually shown, across guests, so the
-  // 90%-different logic in pickDestination has something to avoid.
-  const lastDestinationRef = useRef(null);
 
   useWakeLock(true);
 
@@ -75,8 +72,7 @@ export default function Kiosk() {
     setStampedIndex(n);
     Sound.stamp(true);
     Sound.unlockSpeech(); // re-prime — this tap is closer to when the announcement fires
-    const finalDestination = pickDestination(lastDestinationRef.current);
-    lastDestinationRef.current = finalDestination;
+    const finalDestination = pickNextDestination();
     timers.current.push(
       setTimeout(() => {
         setDestination(finalDestination);
@@ -169,15 +165,15 @@ export default function Kiosk() {
       {screen === "home" && (
         <div className="ek-screen ek-home">
           <div className="ek-kicker ek-in" style={{ animationDelay: "0.08s" }}>
-            <Plane size={22} className="ek-kicker-plane" />
+            <Plane size={28} className="ek-kicker-plane" />
             Now Boarding
           </div>
           <div className="ek-route ek-in" style={{ animationDelay: "0.14s" }} aria-hidden="true">
             <span className="ek-route-line" />
-            <Plane size={16} className="ek-route-plane" />
+            <Plane size={22} className="ek-route-plane" />
           </div>
           <p className="ek-body ek-in" style={{ animationDelay: "0.2s" }}>
-            Choose your passport to reveal your destination.
+            Choose a passport to reveal your destination.
           </p>
           <button className="ek-btn ek-in" style={{ animationDelay: "0.28s" }} onClick={checkIn}>
             Check In
