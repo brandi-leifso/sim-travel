@@ -19,8 +19,9 @@ const ROLL_STEPS = 7;
 const ROLL_START_MS = 70;
 const ROLL_GROWTH = 1.35;
 // How long the destination stays on screen alone before the reveal gives way
-// to the closing "go to the scale" end state.
-const CLOSING_DELAY_MS = 6200;
+// to the closing "go to the scale" end state — the location page's total
+// hold time.
+const CLOSING_DELAY_MS = 10000;
 // The text bubble under "Baggage Drop" types itself out at this pace, after
 // a short pause once the headline lands.
 const TYPE_TEXT = "ILY, text me when you land.";
