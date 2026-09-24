@@ -2,49 +2,61 @@
 
 export const PASSPORT_COUNT = 3;
 
-// Curated destination pool — one is shown on check-in. Edit freely; the
-// no-repeat logic below works with any list length.
+// Curated destination pool — one is shown on check-in, city and country both.
+// Display casing (uppercase, tracked) is handled entirely in CSS, so these
+// read normally here. Edit freely; the no-repeat logic below works with any
+// list length.
 export const DESTINATIONS = [
-  "TOKYO",
-  "PARIS",
-  "BALI",
-  "REYKJAVÍK",
-  "CAPE TOWN",
-  "ROME",
-  "KYOTO",
-  "MARRAKECH",
-  "QUEENSTOWN",
-  "LISBON",
-  "SANTORINI",
-  "BANFF",
-  "BANGKOK",
-  "AMALFI COAST",
-  "DUBAI",
-  "BUENOS AIRES",
-  "ZERMATT",
-  "HAVANA",
-  "MALDIVES",
-  "VANCOUVER",
-  "SYDNEY",
-  "BARCELONA",
-  "VENICE",
-  "SEOUL",
-  "SINGAPORE",
-  "AMSTERDAM",
-  "PRAGUE",
-  "MYKONOS",
-  "LOS ANGELES",
-  "NEW YORK",
-  "LONDON",
-  "EDINBURGH",
-  "NAIROBI",
-  "MADRID",
-  "VIENNA",
-  "COPENHAGEN",
-  "DUBROVNIK",
-  "PORTO",
-  "ATHENS",
-  "FIJI",
+  { city: "Zurich", country: "Switzerland" },
+  { city: "Milan", country: "Italy" },
+  { city: "Florence", country: "Italy" },
+  { city: "Berlin", country: "Germany" },
+  { city: "Munich", country: "Germany" },
+  { city: "Melbourne", country: "Australia" },
+  { city: "Auckland", country: "New Zealand" },
+  { city: "Bora Bora", country: "French Polynesia" },
+  { city: "Phuket", country: "Thailand" },
+  { city: "Hanoi", country: "Vietnam" },
+  { city: "Jaipur", country: "India" },
+  { city: "Mumbai", country: "India" },
+  { city: "Cairo", country: "Egypt" },
+  { city: "Petra", country: "Jordan" },
+  { city: "Tel Aviv", country: "Israel" },
+  { city: "Istanbul", country: "Turkey" },
+  { city: "Cappadocia", country: "Turkey" },
+  { city: "Ibiza", country: "Spain" },
+  { city: "Seville", country: "Spain" },
+  { city: "Granada", country: "Spain" },
+  { city: "Nice", country: "France" },
+  { city: "Provence", country: "France" },
+  { city: "Bordeaux", country: "France" },
+  { city: "Oslo", country: "Norway" },
+  { city: "Bergen", country: "Norway" },
+  { city: "Stockholm", country: "Sweden" },
+  { city: "Helsinki", country: "Finland" },
+  { city: "Tallinn", country: "Estonia" },
+  { city: "Budapest", country: "Hungary" },
+  { city: "Krakow", country: "Poland" },
+  { city: "Zagreb", country: "Croatia" },
+  { city: "Split", country: "Croatia" },
+  { city: "Fes", country: "Morocco" },
+  { city: "Casablanca", country: "Morocco" },
+  { city: "Victoria Falls", country: "Zambia" },
+  { city: "Zanzibar", country: "Tanzania" },
+  { city: "Mahé", country: "Seychelles" },
+  { city: "Port Louis", country: "Mauritius" },
+  { city: "Cartagena", country: "Colombia" },
+  { city: "Medellín", country: "Colombia" },
+  { city: "Cusco", country: "Peru" },
+  { city: "Rio de Janeiro", country: "Brazil" },
+  { city: "Santiago", country: "Chile" },
+  { city: "Quito", country: "Ecuador" },
+  { city: "Nassau", country: "Bahamas" },
+  { city: "Punta Cana", country: "Dominican Republic" },
+  { city: "Montreal", country: "Canada" },
+  { city: "Quebec City", country: "Canada" },
+  { city: "Whistler", country: "Canada" },
+  { city: "Nashville", country: "USA" },
 ];
 
 // Fisher–Yates — an unbiased shuffle, not just "sort by random".
@@ -67,7 +79,7 @@ let lastDispensed = null;
 export function pickNextDestination() {
   if (bag.length === 0) {
     bag = shuffle(DESTINATIONS);
-    if (bag.length > 1 && bag[0] === lastDispensed) {
+    if (bag.length > 1 && bag[0].city === lastDispensed?.city) {
       [bag[0], bag[1]] = [bag[1], bag[0]];
     }
   }
@@ -80,7 +92,9 @@ export function pickNextDestination() {
 // not the strict guarantee above (nobody's tracking those for variety).
 export function pickDestination(exclude) {
   const pool =
-    exclude && Math.random() < 0.9 ? DESTINATIONS.filter((d) => d !== exclude) : DESTINATIONS;
+    exclude && Math.random() < 0.9
+      ? DESTINATIONS.filter((d) => d.city !== exclude.city)
+      : DESTINATIONS;
   return pool[Math.floor(Math.random() * pool.length)];
 }
 

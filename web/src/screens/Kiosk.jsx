@@ -20,7 +20,7 @@ const ROLL_START_MS = 70;
 const ROLL_GROWTH = 1.35;
 // How long the destination stays on screen alone before the reveal gives way
 // to the closing "go to the scale" end state.
-const CLOSING_DELAY_MS = 3200;
+const CLOSING_DELAY_MS = 6200;
 // The text bubble under "Baggage Drop" types itself out at this pace, after
 // a short pause once the headline lands.
 const TYPE_TEXT = "ILY, text me when you land.";
@@ -30,12 +30,16 @@ const TYPE_CHAR_MS = 55;
 export default function Kiosk() {
   const [screen, setScreen] = useState("home"); // home | select | reveal
   const [stampedIndex, setStampedIndex] = useState(null);
-  const [destination, setDestination] = useState(null);
-  const [rollText, setRollText] = useState(null);
+  const [destination, setDestination] = useState(null); // { city, country }
+  const [rollDest, setRollDest] = useState(null); // { city, country } shown during/after the roll
   const [rolling, setRolling] = useState(false);
   const [flight, setFlight] = useState(null);
   const [revealPhase, setRevealPhase] = useState("destination"); // destination | closing
   const [typedText, setTypedText] = useState("");
+  // Forces the city/country pair to remount on every roll step so their
+  // little flip-in animation replays — must be unique per sibling (a "c-"
+  // and "k-" prefix) since two elements sharing one key value is invalid and
+  // previously corrupted reconciliation into stacking every roll frame.
   const rollKey = useRef(0);
   const timers = useRef([]);
 
@@ -76,7 +80,7 @@ export default function Kiosk() {
     timers.current.push(
       setTimeout(() => {
         setDestination(finalDestination);
-        setRollText(pickDestination(finalDestination)); // avoids a blank first frame
+        setRollDest(pickDestination(finalDestination)); // avoids a blank first frame
         setFlight(randomFlightDetails());
         setRevealPhase("destination");
         setScreen("reveal");
@@ -97,18 +101,18 @@ export default function Kiosk() {
       step += 1;
       rollKey.current += 1;
       if (step >= ROLL_STEPS) {
-        setRollText(destination);
+        setRollDest(destination);
         setRolling(false);
         Sound.chime(true);
         timers.current.push(
-          setTimeout(() => Sound.announce(`Final boarding call for ${destination}.`), 450)
+          setTimeout(() => Sound.announce(`Final boarding call for ${destination.city}.`), 450)
         );
         timers.current.push(setTimeout(() => setRevealPhase("closing"), CLOSING_DELAY_MS));
         return;
       }
       const decoy = pickDestination(lastDecoy);
       lastDecoy = decoy;
-      setRollText(decoy);
+      setRollDest(decoy);
       Sound.flip(true);
       delay *= ROLL_GROWTH;
       timers.current.push(setTimeout(tick, delay));
@@ -142,7 +146,7 @@ export default function Kiosk() {
     Sound.stopAnnouncement();
     clearTimers();
     setDestination(null);
-    setRollText(null);
+    setRollDest(null);
     setFlight(null);
     setRevealPhase("destination");
     setScreen("home");
@@ -219,10 +223,13 @@ export default function Kiosk() {
               </div>
               <h1
                 className={"ek-destination" + (rolling ? " is-rolling" : "")}
-                key={rollKey.current}
+                key={"c-" + rollKey.current}
               >
-                {rollText}
+                {rollDest?.city}
               </h1>
+              <div className="ek-country" key={"k-" + rollKey.current}>
+                {rollDest?.country}
+              </div>
               {flight && (
                 <div className={"ek-ticket" + (rolling ? " is-hidden" : "")}>
                   <span>Gate {String(flight.gate).padStart(2, "0")}</span>

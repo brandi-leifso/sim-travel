@@ -306,6 +306,17 @@ html, body {
   100% { opacity: 1; transform: scale(1); }
 }
 
+/* the country, small and quiet directly under the huge city name */
+.ek-country {
+  font-size: clamp(16px, 2vw, 20px);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.65;
+  margin-top: -10px;
+  animation: ek-roll-in 0.16s ease-out both;
+}
+
 .ek-ticket {
   display: flex;
   align-items: center;
